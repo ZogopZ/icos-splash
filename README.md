@@ -1,7 +1,6 @@
 # icos-splash
 
-[![Github Actions Status](https://github.com/github_username/icos-splash/workflows/Build/badge.svg)](https://github.com/github_username/icos-splash/actions/workflows/build.yml)[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/github_username/icos-splash/main?urlpath=lab)
-Show a random NASA Astronomy Picture of the Day in a JupyterLab panel
+Resets the standard Jupyter-Lab splash screen to the ICOS Carbon Portal logo.
 
 ## Requirements
 
