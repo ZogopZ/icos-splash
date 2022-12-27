@@ -8,4 +8,90 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  font-family: 'Open Sans',system-ui,-apple-system,sans-serif;
+  font-size: 100px;
+  font-weight: bold;
+  color: #414042;
+}
+
+.vertical-line {
+  border-left: 6px solid #444345;
+  height: 130px;
+  margin-left: 25px;
+}
+
+#left-side-text {
+  font-family: 'Open Sans',system-ui,-apple-system,sans-serif;
+  font-size: 20px;
+  font-weight: bold;
+  letter-spacing: -0.05em;
+  color: #414042;
+  max-width: 400px;
+  padding: 10px 10px;
+  position: relative;
+  top: -40px;
+  left: 33px;
+}
+
+#circle-container {
+  display: flex;
+  justify-content: space-between;
+  max-width: 400px;
+  padding: 10px 10px;
+  position: relative;
+  top: -25px;
+  left: 30px
+}
+
+#circle-1 {
+  height: 20px;
+  width: 20px;
+  border-radius: 50%;
+  display: inline-block;
+  background-color: white;
+  animation-name: circle-1-animation;
+  animation-delay: 0.2s;
+  animation-duration: 2s;
+  animation-iteration-count: infinite;
+  }
+
+@keyframes circle-1-animation {
+  from {background-color: white;}
+  to {background-color: #e41b64;}
+}
+
+#circle-2 {
+  height: 20px;
+  width: 20px;
+  border-radius: 50%;
+  display: inline-block;
+  background-color: white;
+  animation-name: circle-2-animation;
+  animation-delay: 0.4s;
+  animation-duration: 2s;
+  animation-iteration-count: infinite;
+  margin-left: 5px;
+}
+
+@keyframes circle-2-animation {
+  from {background-color: white;}
+  to {background-color: #09abc9;}
+}
+
+#circle-3 {
+  height: 20px;
+  width: 20px;
+  border-radius: 50%;
+  display: inline-block;
+  background-color: white;
+  animation-name: circle-3-animation;
+  animation-delay: 0.6s;
+  animation-duration: 2s;
+  animation-iteration-count: infinite;
+  margin-left: 5px;
+}
+
+@keyframes circle-3-animation {
+  from {background-color: white;}
+  to {background-color: #e41b64;}
 }

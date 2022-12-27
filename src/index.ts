@@ -36,13 +36,13 @@ namespace CommandIDs {
  * ICOS carbon portal splash screen.
  */
 const splash: JupyterFrontEndPlugin<ISplashScreen> = {
-  id: '@epi2melabs/epi2melabs-splash:plugin',
+  id: '@icos-splash',
   autoStart: true,
   // requires: [ITranslator],
   provides: ISplashScreen,
   activate: (
-    app: JupyterFrontEnd
-    // translator: ITranslator
+      app: JupyterFrontEnd
+      // translator: ITranslator
   ) => {
     // const trans = translator.load('jupyterlab');
     const {
@@ -50,48 +50,76 @@ const splash: JupyterFrontEndPlugin<ISplashScreen> = {
       restored
     } = app;
 
+    // Right hand-side text element.
     const splash = document.createElement('div');
     splash.id = 'icos-splash';
-    // const icosLogo = (new Image()).src = require('../src/assets/ICOS_CP_logo.png').default
-    const icosLogo = new Image()
-    icosLogo.src = 'https://www.icos-cp.eu/sites/default/files/2017-11/ICOS_CP_logo.png'
-    splash.appendChild(icosLogo)
+    splash.innerHTML = 'ICOS'
+    // Vertical line between right and left side.
+    const verticalLine = document.createElement('div');
+    verticalLine.classList.add('vertical-line');
+    splash.appendChild(verticalLine)
+    // Left side container.
+    const leftSide = document.createElement('div');
+    splash.appendChild(leftSide)
+    // Loading circles container.
+    const circleContainer = document.createElement('div');
+    circleContainer.id = 'circle-container'
+    leftSide.appendChild(circleContainer)
+    // Left hand-side text element.
+	const leftSideText = document.createElement('div');
+    leftSideText.id = 'left-side-text'
+    leftSideText.innerHTML = 'CARBON<br>PORTAL'
+    leftSide.appendChild(leftSideText)
+    // Circles
+    const circle1 = document.createElement('div')
+    circle1.id = 'circle-1'
+    circleContainer.appendChild(circle1)
+    const circle2 = document.createElement('div')
+    circle2.id = 'circle-2'
+    circleContainer.appendChild(circle2)
+    const circle3 = document.createElement('div')
+    circle3.id = 'circle-3'
+    circleContainer.appendChild(circle3)
+
+    // const icosLogo = new Image()
+    // icosLogo.src = require('../src/assets/image.png').default
+
     // Create debounced recovery dialog function.
     let dialog: Dialog<unknown> | null;
     const recovery = new Throttler(
-      async () => {
-        if (dialog) {
-          return;
-        }
-
-        dialog = new Dialog({
-          title: 'Loading...',
-          body: `The loading screen is taking a long time. 
-Would you like to clear the workspace or keep waiting?`,
-          buttons: [
-            Dialog.cancelButton({ label: 'Keep Waiting' }),
-            Dialog.warnButton({ label: 'Clear Workspace' })
-          ]
-        });
-
-        try {
-          const result = await dialog.launch();
-          dialog.dispose();
-          dialog = null;
-          if (result.button.accept && commands.hasCommand(CommandIDs.reset)) {
-            return commands.execute(CommandIDs.reset);
+        async () => {
+          if (dialog) {
+            return;
           }
 
-          // Re-invoke the recovery timer in the next frame.
-          requestAnimationFrame(() => {
-            // Because recovery can be stopped, handle invocation rejection.
-            void recovery.invoke().catch(_ => undefined);
+          dialog = new Dialog({
+            title: 'Loading...',
+            body: `The loading screen is taking a long time. 
+Would you like to clear the workspace or keep waiting?`,
+            buttons: [
+              Dialog.cancelButton({ label: 'Keep Waiting' }),
+              Dialog.warnButton({ label: 'Clear Workspace' })
+            ]
           });
-        } catch (error) {
-          /* no-op */
-        }
-      },
-      { limit: SPLASH_RECOVER_TIMEOUT, edge: 'trailing' }
+
+          try {
+            const result = await dialog.launch();
+            dialog.dispose();
+            dialog = null;
+            if (result.button.accept && commands.hasCommand(CommandIDs.reset)) {
+              return commands.execute(CommandIDs.reset);
+            }
+
+            // Re-invoke the recovery timer in the next frame.
+            requestAnimationFrame(() => {
+              // Because recovery can be stopped, handle invocation rejection.
+              void recovery.invoke().catch(_ => undefined);
+            });
+          } catch (error) {
+            /* no-op */
+          }
+        },
+        { limit: SPLASH_RECOVER_TIMEOUT, edge: 'trailing' }
     );
 
     // Return ISplashScreen.
