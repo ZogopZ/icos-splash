@@ -53,7 +53,11 @@ const splash: JupyterFrontEndPlugin<ISplashScreen> = {
     // Right hand-side text element.
     const splash = document.createElement('div');
     splash.id = 'icos-splash';
-    splash.innerHTML = 'IC<span class="letter-o">O</span>S';
+    splash.innerHTML = 'ICOS';
+    // Decoration.
+    const decoration = document.createElement('div');
+    decoration.id = 'decoration'
+    splash.appendChild(decoration);
     // Vertical line between right and left side.
     const verticalLine = document.createElement('div');
     verticalLine.classList.add('vertical-line');
