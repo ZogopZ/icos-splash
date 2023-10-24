@@ -14,6 +14,14 @@
   color: #414042;
 }
 
+span.letter-o {
+  background-image: url("src/assets/pumpkin.png");
+  display: inline-block;
+  background-size: 30% 20%;
+  background-repeat: no-repeat;
+  background-position: 100% 100%;
+}
+
 .vertical-line {
   border-left: 6px solid #444345;
   height: 130px;
