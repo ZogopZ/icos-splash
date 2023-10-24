@@ -17,7 +17,8 @@
 span.letter-o {
   background-image: url("../src/assets/pumpkin.png");
   display: inline-block;
-  background-size: 30% 20%;
+  /*background-size: 30% 20%;*/
+  background-size: 35px 31px;
   background-repeat: no-repeat;
   background-position: 100% 100%;
 }
