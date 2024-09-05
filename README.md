@@ -1,17 +1,19 @@
-# icos-splash
+# icos_splash
 
-Resets the standard Jupyter-Lab splash screen to the ICOS Carbon Portal logo.
+[![Github Actions Status](/workflows/Build/badge.svg)](/actions/workflows/build.yml)
+
+A JupyterLab extension that changes the standard jupyter lab splash animation to the ICOS animation.
 
 ## Requirements
 
-- JupyterLab >= 3.0
+- JupyterLab >= 4.0.0
 
 ## Install
 
 To install the extension, execute:
 
 ```bash
-pip install icos-splash
+pip install icos_splash
 ```
 
 ## Uninstall
@@ -19,7 +21,7 @@ pip install icos-splash
 To remove the extension, execute:
 
 ```bash
-pip uninstall icos-splash
+pip uninstall icos_splash
 ```
 
 ## Contributing
@@ -34,7 +36,7 @@ The `jlpm` command is JupyterLab's pinned version of
 
 ```bash
 # Clone the repo to your local environment
-# Change directory to the icos-splash directory
+# Change directory to the icos_splash directory
 # Install package in development mode
 pip install -e "."
 # Link your development version of the extension with JupyterLab
@@ -63,32 +65,12 @@ jupyter lab build --minimize=False
 ### Development uninstall
 
 ```bash
-pip uninstall icos-splash
+pip uninstall icos_splash
 ```
 
 In development mode, you will also need to remove the symlink created by `jupyter labextension develop`
 command. To find its location, you can run `jupyter labextension list` to figure out where the `labextensions`
-folder is located. Then you can remove the symlink named `icos-splash` within that folder.
-
-### Testing the extension
-
-#### Frontend tests
-
-This extension is using [Jest](https://jestjs.io/) for JavaScript code testing.
-
-To execute them, execute:
-
-```sh
-jlpm
-jlpm test
-```
-
-#### Integration tests
-
-This extension uses [Playwright](https://playwright.dev/docs/intro/) for the integration tests (aka user level tests).
-More precisely, the JupyterLab helper [Galata](https://github.com/jupyterlab/jupyterlab/tree/master/galata) is used to handle testing the extension in JupyterLab.
-
-More information are provided within the [ui-tests](./ui-tests/README.md) README.
+folder is located. Then you can remove the symlink named `icosSplash` within that folder.
 
 ### Packaging the extension
 
