@@ -6,7 +6,7 @@ A JupyterLab extension that changes the standard jupyter lab splash animation to
 
 ## Requirements
 
-- JupyterLab >= 4.0.0
+- JupyterLab == 3.4.7
 
 ## Install
 
