@@ -4,19 +4,15 @@ import {
 } from '@jupyterlab/application';
 
 import { Dialog, ISplashScreen } from '@jupyterlab/apputils';
-
 import { Throttler } from '@lumino/polling';
-
 import { DisposableDelegate } from '@lumino/disposable';
 
-/**
- * The interval in milliseconds before recover options appear during splash.
- */
+/* ------------------------------------------
+   Splash Screen
+------------------------------------------- */
+
 const SPLASH_RECOVER_TIMEOUT = 12000;
 
-/**
- * The command IDs used by the apputils plugin.
- */
 namespace CommandIDs {
   export const loadState = 'apputils:load-statedb';
   export const print = 'apputils:print';
@@ -25,66 +21,46 @@ namespace CommandIDs {
   export const runFirstEnabled = 'apputils:run-first-enabled';
 }
 
-/**
- * ICOS carbon portal splash screen.
- */
 const splash: JupyterFrontEndPlugin<ISplashScreen> = {
   id: '@icos-splash',
   autoStart: true,
-  // requires: [ITranslator],
   provides: ISplashScreen,
-  activate: (
-    app: JupyterFrontEnd
-    // translator: ITranslator
-  ) => {
-    // const trans = translator.load('jupyterlab');
+  activate: (app: JupyterFrontEnd) => {
     const { commands, restored } = app;
 
-    // Right hand-side text element.
     const splash = document.createElement('div');
     splash.id = 'icos-splash';
     splash.innerHTML = 'ICOS';
-    // Vertical line between right and left side.
+
     const verticalLine = document.createElement('div');
     verticalLine.classList.add('vertical-line');
     splash.appendChild(verticalLine);
-    // Left side container.
+
     const leftSide = document.createElement('div');
     splash.appendChild(leftSide);
-    // Loading circles container.
+
     const circleContainer = document.createElement('div');
     circleContainer.id = 'circle-container';
     leftSide.appendChild(circleContainer);
-    // Left hand-side text element.
+
     const leftSideText = document.createElement('div');
     leftSideText.id = 'left-side-text';
     leftSideText.innerHTML = 'CARBON<br>PORTAL';
     leftSide.appendChild(leftSideText);
-    // Circles
-    const circle1 = document.createElement('div');
-    circle1.id = 'circle-1';
-    circleContainer.appendChild(circle1);
-    const circle2 = document.createElement('div');
-    circle2.id = 'circle-2';
-    circleContainer.appendChild(circle2);
-    const circle3 = document.createElement('div');
-    circle3.id = 'circle-3';
-    circleContainer.appendChild(circle3);
 
-    // const icosLogo = new Image()
-    // icosLogo.src = require('../src/assets/image.png').default
+    ['circle-1', 'circle-2', 'circle-3'].forEach(id => {
+      const c = document.createElement('div');
+      c.id = id;
+      circleContainer.appendChild(c);
+    });
 
-    // Create debounced recovery dialog function.
     let dialog: Dialog<unknown> | null;
     const recovery = new Throttler(
       async () => {
-        if (dialog) {
-          return;
-        }
-
+        if (dialog) return;
         dialog = new Dialog({
           title: 'Loading...',
-          body: `The loading screen is taking a long time. 
+          body: `The loading screen is taking a long time.
 Would you like to clear the workspace or keep waiting?`,
           buttons: [
             Dialog.cancelButton({ label: 'Keep Waiting' }),
@@ -99,46 +75,26 @@ Would you like to clear the workspace or keep waiting?`,
           if (result.button.accept && commands.hasCommand(CommandIDs.reset)) {
             return commands.execute(CommandIDs.reset);
           }
-
-          // Re-invoke the recovery timer in the next frame.
-          requestAnimationFrame(() => {
-            // Because recovery can be stopped, handle invocation rejection.
-            void recovery.invoke().catch(_ => undefined);
-          });
-        } catch (error) {
-          /* no-op */
-        }
+          requestAnimationFrame(() => void recovery.invoke().catch(() => undefined));
+        } catch { /* no-op */ }
       },
       { limit: SPLASH_RECOVER_TIMEOUT, edge: 'trailing' }
     );
 
-    // Return ISplashScreen.
     let splashCount = 0;
     return {
       show: () => {
         splash.classList.remove('splash-fade');
         splashCount++;
-
-        console.log('adding');
         document.body.appendChild(splash);
-
-        // Because recovery can be stopped, handle invocation rejection.
-        void recovery.invoke().catch(_ => undefined);
-
+        void recovery.invoke().catch(() => undefined);
         return new DisposableDelegate(async () => {
           await restored;
           if (--splashCount === 0) {
             void recovery.stop();
-
-            if (dialog) {
-              dialog.dispose();
-              dialog = null;
-            }
-
+            if (dialog) { dialog.dispose(); dialog = null; }
             splash.classList.add('splash-fade');
-            window.setTimeout(() => {
-              document.body.removeChild(splash);
-            }, 200);
+            setTimeout(() => document.body.removeChild(splash), 200);
           }
         });
       }
@@ -146,4 +102,196 @@ Would you like to clear the workspace or keep waiting?`,
   }
 };
 
-export default splash;
+/* ------------------------------------------
+  Sidebar ICOS HUB + Popup + Tooltip
+------------------------------------------- */
+
+const sidebar: JupyterFrontEndPlugin<void> = {
+  id: '@icos-sidebar',
+  autoStart: true,
+  activate: () => {
+
+    const cleanTabs = () => {
+      document.querySelectorAll("ul.lm-TabBar-content.p-TabBar-content li.lm-TabBar-tab")
+        .forEach(tab => {
+          const title = tab.getAttribute("title") || "";
+          if (title.toLowerCase().includes("commands")) {
+            (tab as HTMLElement).style.display = "none";
+          }
+        });
+    };
+
+    const tryInject = () => {
+      const tabBar = document.querySelector("ul.lm-TabBar-content.p-TabBar-content");
+      if (!tabBar) return;
+
+      tabBar.querySelectorAll("#icos-tab").forEach(el => el.remove());
+
+      const tab = document.createElement("li");
+      tab.className = "lm-TabBar-tab p-TabBar-tab";
+      tab.id = "icos-tab";
+      tab.setAttribute("role", "tab");
+      tab.style.cursor = "pointer";
+      tab.title = "Open Hub";
+
+      const label = document.createElement("div");
+      label.className = "p-TabBar-tabLabel";
+      label.textContent = "ICOS HUB";
+      label.style.display = "flex";
+      label.style.alignItems = "center";
+      label.style.justifyContent = "center";
+      label.style.width = "100%";
+      label.style.textAlign = "center";
+      label.style.fontSize = "11px";
+      label.style.fontWeight = "bold";
+      label.style.padding = "0 4px";
+      tab.appendChild(label);
+      tabBar.appendChild(tab);
+
+      /* ---------------- Pinned Popup ---------------- */
+      (function () {
+        const popup = document.createElement("div");
+        popup.id = "icos-pinned-popup";
+        popup.innerHTML = `
+          <div style="font-weight:600; margin-bottom:3px;">
+            Click here to return to environment selection:
+          </div>
+          <div style="font-size:10px; opacity:0.85;">
+            ⏹ <strong>Stop My Server</strong> → ▶ <strong>Start My Server</strong>
+          </div>
+        `;
+        Object.assign(popup.style, {
+          position: "fixed",
+          fontSize: "11px",
+          padding: "8px 10px",
+          background: "var(--jp-layout-color1)",
+          color: "var(--jp-ui-font-color1)",
+          border: "1px solid var(--jp-border-color2)",
+          borderRadius: "6px",
+          boxShadow: "0 1px 4px rgba(0,0,0,.2)",
+          zIndex: "99999",
+          whiteSpace: "normal",
+          maxWidth: "210px",
+          cursor: "default"
+        });
+
+        const arrow = document.createElement("div");
+        Object.assign(arrow.style, {
+          position: "absolute",
+          width: "0",
+          height: "0",
+          borderTop: "6px solid transparent",
+          borderBottom: "6px solid transparent",
+          borderRight: "6px solid var(--jp-layout-color1)",
+          filter: "drop-shadow(0px 0px 2px rgba(0,0,0,.2))"
+        });
+        popup.appendChild(arrow);
+        document.body.appendChild(popup);
+
+        const positionPopup = () => {
+          const r = tab.getBoundingClientRect();
+          const pr = popup.getBoundingClientRect();
+          const centerY = r.top + (r.height / 2) - (pr.height / 2);
+          popup.style.top = Math.max(centerY, 0) + "px";
+          popup.style.left = (r.right + 12) + "px";
+          arrow.style.top = ((pr.height / 2) - 6) + "px";
+          arrow.style.left = "-6px";
+        };
+
+        setTimeout(positionPopup, 0);
+        window.addEventListener("resize", positionPopup);
+        window.addEventListener("scroll", positionPopup);
+
+        popup.addEventListener("click", () => popup.style.display = "none");
+
+        let popupTimeout = setTimeout(() => popup.style.display = "none", 3000);
+
+        popup.addEventListener("mouseenter", () => clearTimeout(popupTimeout));
+        popup.addEventListener("mouseleave", () => {
+          if (popup.style.display !== "none") {
+            popupTimeout = setTimeout(() => popup.style.display = "none", 1500);
+          }
+        });
+      })();
+
+      /* ---------------- Tooltip ---------------- */
+      (function () {
+        const tooltip = document.createElement("div");
+        tooltip.innerHTML = `
+          <div style="font-weight:600; margin-bottom:3px;">
+            Click here to return to environment selection:
+          </div>
+          <div style="font-size:10px; opacity:0.85;">
+            ⏹ <strong>Stop My Server</strong> → ▶ <strong>Start My Server</strong>
+          </div>
+        `;
+        Object.assign(tooltip.style, {
+          position: "fixed",
+          fontSize: "11px",
+          padding: "8px 10px",
+          background: "var(--jp-layout-color1)",
+          color: "var(--jp-ui-font-color1)",
+          border: "1px solid var(--jp-border-color2)",
+          borderRadius: "6px",
+          boxShadow: "0 1px 4px rgba(0,0,0,.2)",
+          zIndex: "99999",
+          whiteSpace: "normal",
+          maxWidth: "210px",
+          cursor: "default",
+          display: "none"
+        });
+
+        const tipArrow = document.createElement("div");
+        Object.assign(tipArrow.style, {
+          position: "absolute",
+          width: "0",
+          height: "0",
+          borderTop: "6px solid transparent",
+          borderBottom: "6px solid transparent",
+          borderRight: "6px solid var(--jp-layout-color1)",
+          filter: "drop-shadow(0px 0px 2px rgba(0,0,0,.2))"
+        });
+        tooltip.appendChild(tipArrow);
+        document.body.appendChild(tooltip);
+
+        const positionTooltip = () => {
+          const r = tab.getBoundingClientRect();
+          const t = tooltip.getBoundingClientRect();
+          const centerY = r.top + (r.height / 2) - (t.height / 2);
+          tooltip.style.top = Math.max(centerY, 0) + "px";
+          tooltip.style.left = (r.right + 12) + "px";
+          tipArrow.style.top = ((t.height / 2) - 6) + "px";
+          tipArrow.style.left = "-6px";
+        };
+
+        tab.addEventListener("mouseenter", () => {
+          tooltip.style.display = "block";
+          positionTooltip();
+        });
+        tab.addEventListener("mouseleave", () => tooltip.style.display = "none");
+
+        window.addEventListener("resize", () => {
+          if (tooltip.style.display !== "none") positionTooltip();
+        });
+        window.addEventListener("scroll", () => {
+          if (tooltip.style.display !== "none") positionTooltip();
+        });
+      })();
+
+      tab.addEventListener("click", () => {
+        window.open("https://exploredata.icos-cp.eu/hub/home");
+      });
+
+      cleanTabs();
+    };
+
+    let t = setInterval(() => {
+      tryInject();
+      cleanTabs();
+      if (document.getElementById("icos-tab")) clearInterval(t);
+    }, 400);
+  }
+};
+
+
+export default [splash, sidebar];
