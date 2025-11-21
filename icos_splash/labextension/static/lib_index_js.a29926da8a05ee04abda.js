@@ -19,10 +19,7 @@
         /* harmony import */ var _lumino_disposable__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_lumino_disposable__WEBPACK_IMPORTED_MODULE_2__);
 
 
-        /* ============================================================================
-           1) ICOS SPLASH (unchanged)
-           ========================================================================== */
-
+        // icos splash animation
         const SPLASH_RECOVER_TIMEOUT = 12000;
 
         var CommandIDs;
@@ -110,10 +107,7 @@ Would you like to clear the workspace or keep waiting?`,
         };
 
 
-        /* ============================================================================
-           2) ICOS SIDEBAR — direct link, hide everything else
-           ========================================================================== */
-
+        // icos sidebar button
         const sidebar = {
             id: '@icos-sidebar',
             autoStart: true,
@@ -158,7 +152,6 @@ Would you like to clear the workspace or keep waiting?`,
                     // Pinned popup
                     (function () {
 
-                        // Create popup container
                         const popup = document.createElement("div");
                         popup.id = "icos-pinned-popup";
                         popup.innerHTML = `
@@ -196,28 +189,20 @@ Would you like to clear the workspace or keep waiting?`,
                         popup.appendChild(arrow);
                         document.body.appendChild(popup);
 
-                        // Center popup position relative to tab
                         const positionPopup = () => {
                             const r = tab.getBoundingClientRect();
                             const popupRect = popup.getBoundingClientRect();
-
-                            // Center vertically: tab midpoint - half popup height
                             const centerY = r.top + (r.height / 2) - (popupRect.height / 2);
-
                             popup.style.top = Math.max(centerY, 0) + "px";
                             popup.style.left = (r.right + 12) + "px";
-
-                            // Position arrow in the vertical center of popup
                             arrow.style.top = ((popupRect.height / 2) - 6) + "px";
                         };
 
-                        // Initial position after DOM has rendered sizes
                         setTimeout(positionPopup, 0);
 
                         window.addEventListener("resize", positionPopup);
                         window.addEventListener("scroll", positionPopup);
 
-                        // Close on click anywhere inside popup
                         popup.addEventListener("click", () => {
                             popup.style.display = "none";
                         });
@@ -236,7 +221,7 @@ Would you like to clear the workspace or keep waiting?`,
                             if (popup.style.display !== "none") {
                                 popupTimeout = setTimeout(() => {
                                     popup.style.display = "none";
-                                }, 1500);  // delay a little after leaving
+                                }, 1800);  // delay a little after leaving
                             }
                         });
 
@@ -244,8 +229,6 @@ Would you like to clear the workspace or keep waiting?`,
 
                     // Tooltip
                     (function () {
-
-                        // Create tooltip container but keep it hidden
                         const tooltip = document.createElement("div");
                         tooltip.id = "icos-tooltip";
                         tooltip.innerHTML = `
@@ -269,8 +252,6 @@ Would you like to clear the workspace or keep waiting?`,
                         tooltip.style.maxWidth = "210px";
                         tooltip.style.cursor = "default";
                         tooltip.style.display = "none";
-
-                        // Arrow indicator (matches popup)
                         const tipArrow = document.createElement("div");
                         tipArrow.style.position = "absolute";
                         tipArrow.style.width = "0";
@@ -331,15 +312,8 @@ Would you like to clear the workspace or keep waiting?`,
             }
         };
 
-
-        /* ============================================================================
-           EXPORT BOTH
-           ========================================================================== */
-
         const plugins = [splash, sidebar];
         /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (plugins);
-
-
         /***/ })
 
 }]);
