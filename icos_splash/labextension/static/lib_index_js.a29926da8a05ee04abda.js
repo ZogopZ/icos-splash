@@ -139,7 +139,6 @@ Would you like to clear the workspace or keep waiting?`,
                     tab.setAttribute("role", "tab");
                     tab.style.cursor = "pointer";
                     tab.style.userSelect = "none";
-                    tab.title = "Open Google";
                     const label = document.createElement("div");
                     label.className = "p-TabBar-tabLabel";
                     label.textContent = "ICOS HUB";
