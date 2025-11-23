@@ -210,7 +210,7 @@ Would you like to clear the workspace or keep waiting?`,
                         // Auto-dismiss after a delay, unless hovered
                         let popupTimeout = setTimeout(() => {
                             popup.style.display = "none";
-                        }, 1500);  // 3000ms = 3 seconds
+                        }, 2000);
 
                         popup.addEventListener("mouseenter", () => {
                             clearTimeout(popupTimeout);  // prevent dismiss while reading
@@ -298,7 +298,8 @@ Would you like to clear the workspace or keep waiting?`,
 
 
                     tab.addEventListener("click", () => {
-                        window.open("https://exploredata.icos-cp.eu/hub/home");
+                        const host = window.location.hostname;
+                        window.open(`https://${host}/hub/home`);
                     });
 
                     cleanTabs();
@@ -308,7 +309,7 @@ Would you like to clear the workspace or keep waiting?`,
                     tryInject();
                     cleanTabs();
                     if (document.getElementById("icos-tab")) clearInterval(t);
-                }, 400);
+                }, 600);
             }
         };
 
