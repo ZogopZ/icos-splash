@@ -38,7 +38,6 @@ exclude = [".github", "binder"]
 
 [tool.hatch.build.targets.wheel.shared-data]
 "icos_splash/labextension" = "share/jupyter/labextensions/icosSplash"
-"install.json" = "share/jupyter/labextensions/icosSplash/install.json"
 
 [tool.hatch.build.hooks.version]
 path = "icos_splash/_version.py"
